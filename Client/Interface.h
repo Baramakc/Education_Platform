@@ -1,33 +1,60 @@
 #pragma once
 #include <winsock2.h>
 #include "Client_date.h"
+#include <thread>
+#include "Send_Recv.h"
 
 class Client_Inteface {
 	SOCKET* sock;
 	Date date;
 
-	void autorization() {
+	//Сделать приём данных на сервере
+	void send_date() {
 
+	}
+
+	//Сделать отправку данных при регестрации или изменени бщих данных на сервер
+	void recv_date(Date date) {
+
+	}
+
+	void exam(std::string date, std::string name_date, bool &buffer) {
+		buffer = is_date_available(sock, date, name_date);
+	}
+
+
+	void autorization() {
+		while (true) {
+			std::string oth_login, oth_password;
+			std::cout << "Input your login: "; std::cin >> oth_login;
+			bool is_login, is_password;
+			std::thread thread_login(exam, oth_login, "login", is_login);
+			std::cout << "Input your password: "; std::cin >> oth_password;
+			std::thread thread_password(exam, oth_password, "password", is_password);
+
+			thread_login.join(); thread_password.join();
+		}
 	}
 
 	void registration() {
 		std::string oth_login, oth_password, oth_name, oth_role;
 		do {
 			std::cout << "Input your login: "; std::cin >> oth_login;
-			if (oth_login.size() > 5) break;
+			if (oth_login.length() > 5 && oth_login.length() < 20) break;
 			else std::cout << "Login size less four simvols\nReturn please\n";
 		} while (true);
 		do {
 			std::string buffer;
 			std::cout << "Input your password: "; std::cin >> oth_password;
 			std::cout << "Input your password again: "; std::cin >> buffer;
-			if (oth_password == buffer) break;
+			if ((oth_password == buffer) && (oth_password.length() > 5 && oth_password.length() < 20)) break;
 			else std::cout << "The passwords are not the same\nReturn please\n";
 		} while (true);
 		std::cout << "Input your name: "; std::cin >> oth_name;
 		std::cout << "Input your role(teacher, student, parent): "; std::cin >> oth_role;
 		date.set_key();
 		date.set_login(oth_login); date.set_password(oth_password); date.set_userName(oth_name); date.set_role(oth_role);
+		recv_date(date);
 		autorization();
 	}
 
