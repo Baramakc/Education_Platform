@@ -18,7 +18,7 @@ class Client_Inteface {
 
 	}
 
-	void exam(std::string date, std::string name_date, bool &buffer) {
+	void exam(const std::string const date, const std::string name_date, bool &buffer) {
 		buffer = is_date_available(sock, date, name_date);
 	}
 
@@ -27,12 +27,13 @@ class Client_Inteface {
 		while (true) {
 			std::string oth_login, oth_password;
 			std::cout << "Input your login: "; std::cin >> oth_login;
-			bool is_login, is_password;
-			std::thread thread_login(exam, oth_login, "login", is_login);
+			bool is_login = false, is_password = false;
+			std::thread thread_login(&Client_Inteface::exam,oth_login, "login", is_login);
+			thread_login.detach();
 			std::cout << "Input your password: "; std::cin >> oth_password;
-			std::thread thread_password(exam, oth_password, "password", is_password);
-
-			thread_login.join(); thread_password.join();
+			std::thread thread_passord(&Client_Inteface::exam,oth_password, "password", is_password);
+			thread_passord.detach();
+			
 		}
 	}
 

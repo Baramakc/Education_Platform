@@ -79,5 +79,4 @@ public:
     void set_key(char buffer) {
         this->key = buffer;
     }
-
 };
